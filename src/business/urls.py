@@ -3,6 +3,7 @@ from .views import (
     BusinessCategoryListAPIView,
     BusinessInfoCreateAPIView,
     BusinessInfoListAPIView,
+    BusinessInfoRetrieveAPIView,
     BusinessInfoUpdateAPIView,
     SubmitBusinessKYCAPIView,
 )
@@ -16,6 +17,11 @@ urlpatterns = [
     path(
         "business-info/update",
         BusinessInfoUpdateAPIView.as_view(),
+        name="business-info-update",
+    ),
+    path(
+        "business-info",
+        BusinessInfoRetrieveAPIView.as_view(),
         name="business-info-update",
     ),
     path(

@@ -40,7 +40,7 @@ class BusinessInfoCreateAPIView(generics.CreateAPIView):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class BusinessInfoUpdateAPIView(generics.RetrieveUpdateAPIView):
+class BusinessInfoUpdateAPIView(generics.UpdateAPIView):
     """
     API to edit existing business info for a farmer.
     Only allows editing of the farmer's own business info.
@@ -55,15 +55,33 @@ class BusinessInfoUpdateAPIView(generics.RetrieveUpdateAPIView):
         try:
             return BusinessInfo.objects.get(farmer=user)
         except BusinessInfo.DoesNotExist:
-            raise serializers.ValidationError(
-                "Business info does not exist for this farmer."
-            )
+            raise serializers.ValidationError({"message": "Please add business info"})
 
     def update(self, request, *args, **kwargs):
         try:
             return super().update(request, *args, **kwargs)
         except serializers.ValidationError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BusinessInfoRetrieveAPIView(generics.RetrieveAPIView):
+    """
+    API to retrieve existing business info for a farmer.
+    """
+
+    queryset = BusinessInfo.objects.all()
+    serializer_class = BusinessInfoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        user = self.request.user
+        try:
+            object = BusinessInfo.objects.get(farmer=user)
+        except BusinessInfo.DoesNotExist:
+            raise serializers.ValidationError("Business info do not exists.")
+        
+        serializer = self.get_serializer(object)
+        return Response(serializer.data)
 
 
 class BusinessCategoryListAPIView(ListAPIView):
