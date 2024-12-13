@@ -1,5 +1,6 @@
 from django.db import models
 from src.base.models import AbstractInfoModel
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 from src.user.models import User
 
@@ -37,10 +38,35 @@ class Product(AbstractInfoModel):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     offer_price = models.DecimalField(max_digits=10, decimal_places=2)
     stock_quantity = models.PositiveIntegerField()
+    featured_image = models.ImageField(upload_to="products", null=True)
     unit = models.CharField(max_length=20, choices=UNIT_CHOICES, default="piece")
 
     def __str__(self):
         return self.name
+
+    def average_rating(self):
+        reviews = self.reviews.all()
+        total_reviews = reviews.count()
+        if total_reviews == 0:
+            return 0  # Return 0 if no reviews exist
+        total_rating = sum(review.rating for review in reviews)
+        return total_rating / total_reviews
+    
+    def total_reviews(self):
+        return self.reviews.count()
+
+
+class ProductReview(AbstractInfoModel):
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="reviews"
+    )
+    rating = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)], default=5
+    )
+    review_message = models.CharField(max_length=500)
+
+    def __str__(self):
+        return self.review_message
 
 
 # Product Image Model

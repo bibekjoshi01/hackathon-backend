@@ -253,8 +253,8 @@ CORS_URLS_REGEX = r"^/api/.*$"
 
 SPECTACULAR_SETTINGS = {
     "SCHEMA_COMPONENT_SPLIT_UNDERSCORES": False,
-    "TITLE": "Blog API",
-    "DESCRIPTION": "Documentation of API endpoints of Blog App",
+    "TITLE": "KEC Hackathon API",
+    "DESCRIPTION": "Documentation of API endpoints of Hackathon App",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
     "POSTPROCESSING_HOOKS": [

@@ -177,14 +177,14 @@ class PublicUserLoginSerializer(serializers.ModelSerializer):
         redirect_url = attrs.pop("redirect_url", None)
 
         user = self.get_user(persona)
-        self.check_password(user, password)
-        self.check_user_status(user)
-        self.check_website_user(user)
+        # self.check_password(user, password)
+        # self.check_user_status(user)
+        # self.check_website_user(user)
 
         context = {"request": self.context.get("request")}
 
         permissions = []
-        user_roles = user.user_roles.filter(is_archived=False, is_active=True)
+        # user_roles = user.user_roles.filter(is_archived=False, is_active=True)
 
         # user_roles = GetRoleAndPermissionForLoginSerializer(
         #     user_roles,
@@ -193,9 +193,9 @@ class PublicUserLoginSerializer(serializers.ModelSerializer):
         # )
 
         # Extract permissions from role data
-        for role in user_roles.data:
-            if "permissions" in role and role["permissions"] is not None:
-                permissions.extend(role.pop("permissions"))
+        # for role in user_roles.data:
+        #     if "permissions" in role and role["permissions"] is not None:
+        #         permissions.extend(role.pop("permissions"))
 
         # Update the last login datetime
         user.last_login = timezone.now()

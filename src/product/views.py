@@ -2,9 +2,11 @@ from django_filters.filterset import FilterSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.generics import ListAPIView
 
-from src.product.models import Product
+from src.product.models import Product, ProductCategory
 from src.product.serializers import (
+    ProductCategorySerializer,
     ProductCreateSerializer,
     ProductListSerializer,
     ProductRetrieveSerializer,
@@ -17,7 +19,7 @@ class FilterForProductViewSet(FilterSet):
 
     class Meta:
         model = Product
-        fields = ["is_active"]
+        fields = ["is_active", "category"]
 
 
 class ProductViewSet(ModelViewSet):
@@ -30,7 +32,7 @@ class ProductViewSet(ModelViewSet):
     filterset_class = FilterForProductViewSet
     search_fields = ["name"]
     ordering = ["-name"]
-    rdering_fields = ["id", "created_at"]
+    ordering_fields = ["id", "created_at"]
     http_method_names = ["options", "head", "get", "post", "patch"]
 
     def get_serializer_class(self):
@@ -46,3 +48,12 @@ class ProductViewSet(ModelViewSet):
             serializer_class = ProductUpdateSerializer
 
         return serializer_class
+
+
+class ProductCategoryListAPIView(ListAPIView):
+    queryset = ProductCategory.objects.filter(is_active=True)
+    serializer_class = ProductCategorySerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    ordering = ["name"]
+    search_fields = ["name"]
+    ordering_fields = ["name"]
