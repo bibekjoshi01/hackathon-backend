@@ -37,15 +37,10 @@ THIRD_PARTY_APPS = [
     "drf_spectacular",
     "rest_framework_simplejwt.token_blacklist",
     "mptt",
-    "django_elasticsearch_dsl"
+    "django_elasticsearch_dsl",
 ]
 
-LOCAL_APPS = [
-    "src.user",
-    "src.blog",
-    "src.product",
-    "src.business"
-]
+LOCAL_APPS = ["src.user", "src.blog", "src.product", "src.business"]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
@@ -244,9 +239,9 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "EXCEPTION_HANDLER": "src.libs.exception_handler.custom_exception_handler",
-    'DEFAULT_THROTTLE_RATES': {
-        'anon': '5/minute',
-    }
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "5/minute",
+    },
 }
 
 NESTED_FORM_PARSER = {"OPTIONS": {"allow_empty": True, "allow_blank": True}}
@@ -349,3 +344,4 @@ CACHES = {
 
 
 ELASTICSEARCH_DSL = {"default": {"hosts": "localhost:9200"}}
+OPENAI_API_KEY = env("OPENAI_API_KEY")

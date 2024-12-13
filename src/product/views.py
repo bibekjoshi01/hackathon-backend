@@ -5,6 +5,32 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .utils import generate_product_description
+
+
+class ProductDescriptionAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        product_name = request.data.get("product_name")
+        category = request.data.get("category")
+        additional_info = request.data.get("additional_info", "")
+
+        if not product_name or not category:
+            return Response(
+                {"error": "Product name and category are required."}, status=400
+            )
+
+        try:
+            description = generate_product_description(
+                product_name, category, additional_info
+            )
+            return Response({"description": description}, status=200)
+        except ValueError as e:
+            return Response({"error": str(e)}, status=500)
+
 
 from src.product.models import Product, ProductCategory
 from src.product.serializers import (
@@ -26,7 +52,7 @@ class FilterForProductViewSet(FilterSet):
 
 class ProductViewSet(ModelViewSet):
     """Product ViewSet"""
-                                                                                                                                                
+
     permission_classes = [IsAuthenticated]
     queryset = Product.objects.filter(is_archived=False)
     serializer_class = ProductListSerializer
@@ -60,3 +86,24 @@ class ProductCategoryListAPIView(ListAPIView):
     search_fields = ["name"]
     ordering_fields = ["name"]
 
+
+class ProductDescriptionAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        product_name = request.data.get("product_name")
+        category = request.data.get("category")
+        additional_info = request.data.get("additional_info", "")
+
+        if not product_name or not category:
+            return Response(
+                {"error": "Product name and category are required."}, status=400
+            )
+
+        try:
+            description = generate_product_description(
+                product_name, category, additional_info
+            )
+            return Response({"description": description}, status=200)
+        except ValueError as e:
+            return Response({"error": str(e)}, status=500)
