@@ -290,21 +290,17 @@ class PublicUserProfileSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             "id",
-            "uuid",
             "photo",
-            "username",
             "first_name",
             "middle_name",
+            "bio",
             "last_name",
             "full_name",
             "phone_no",
             "email",
-            "is_superuser",
             "date_joined",
-            "is_active",
             "is_email_verified",
             "is_phone_verified",
-            "country",
             "roles",
         ]
 

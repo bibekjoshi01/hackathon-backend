@@ -135,7 +135,11 @@ class UserManager(BaseUserManager):
     def create_public_user(self, username, email=None, password=None, **extra_fields):
         user = self._create_user(username, email, password, **extra_fields)
         try:
-            user_group = UserRole.objects.get(codename="PUBLIC-USER")
+            if extra_fields.pop("is_customer", None):
+                user_group = UserRole.objects.get(codename="CUSTOMER")
+            elif extra_fields.pop("is_business"):
+                user_group = UserRole.objects.get(codename="BUSINESS")
+
             user.groups.add(user_group)
         except UserRole.DoesNotExist as err:
             user_group = "Public User"
@@ -168,6 +172,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(_("last name"), max_length=100, blank=True)
     email = models.EmailField(_("email address"), unique=True, blank=True)
     phone_no = models.CharField(_("phone number"), max_length=15, blank=True)
+    bio = models.TextField(blank=True)  
     photo = models.ImageField(
         validators=[validate_image],
         blank=True,

@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.throttling import AnonRateThrottle
 
 from src.user.public.messages import (
@@ -140,7 +140,7 @@ class PublicUserLogoutAPIView(APIView):
 class PublicUserProfileView(generics.RetrieveAPIView):
     """User Profile View"""
 
-    permission_classes = [WebsiteUserBasePermission]
+    permission_classes = [IsAuthenticated]
     serializer_class = PublicUserProfileSerializer
 
     def get_object(self):

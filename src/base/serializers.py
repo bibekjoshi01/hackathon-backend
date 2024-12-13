@@ -23,7 +23,7 @@ class AbstractInfoRetrieveSerializer(ModelSerializer):
         self,
         obj,
     ) -> str:
-        return obj.created_by.get_full_name
+        return obj.created_by.full_name
 
 
 class PublicAbstractInfoRetrieveSerializer(ModelSerializer):

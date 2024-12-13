@@ -38,7 +38,6 @@ class ProductListSerializer(serializers.ModelSerializer):
 
 class ProductRetrieveSerializer(AbstractInfoRetrieveSerializer):
     category = ProductCategorySerializer()
-    product_images = ProductImageSerializer(many=True)
     average_rating = serializers.SerializerMethodField() 
 
     class Meta(AbstractInfoRetrieveSerializer.Meta):
@@ -54,7 +53,6 @@ class ProductRetrieveSerializer(AbstractInfoRetrieveSerializer):
             "is_active",
             "description",
             "category",
-            "product_images",
             "average_rating"
         ]
 

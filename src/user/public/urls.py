@@ -2,10 +2,12 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from .views import (
+    PublicUserProfileUpdateView,
     PublicUserSignInAPIView,
     PublicUserSignUpAPIView,
     PublicUserSocialAuthAPIView,
-    PublicUserLogoutAPIView
+    PublicUserLogoutAPIView,
+    PublicUserProfileView,
 )
 
 router = DefaultRouter(trailing_slash=False)
@@ -26,6 +28,12 @@ urlpatterns = [
         PublicUserSignUpAPIView.as_view(),
         name="public_user_signup",
     ),
+    path(
+        "users/profile/update",
+        PublicUserProfileUpdateView.as_view(),
+        name="public_user_profile_update",
+    ),
     path("users/logout", PublicUserLogoutAPIView.as_view(), name="public_user_logout"),
+    path("users/profile", PublicUserProfileView.as_view(), name="public_user_profile"),
     path("", include(router.urls)),
 ]

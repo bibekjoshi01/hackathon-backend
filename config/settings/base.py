@@ -37,12 +37,14 @@ THIRD_PARTY_APPS = [
     "drf_spectacular",
     "rest_framework_simplejwt.token_blacklist",
     "mptt",
+    "django_elasticsearch_dsl"
 ]
 
 LOCAL_APPS = [
     "src.user",
     "src.blog",
-    "src.product"
+    "src.product",
+    "src.business"
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -344,3 +346,6 @@ CACHES = {
         },
     },
 }
+
+
+ELASTICSEARCH_DSL = {"default": {"hosts": "localhost:9200"}}

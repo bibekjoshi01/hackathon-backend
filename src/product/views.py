@@ -1,8 +1,10 @@
+from elasticsearch_dsl import Q
 from django_filters.filterset import FilterSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticated
 
 from src.product.models import Product, ProductCategory
 from src.product.serializers import (
@@ -24,14 +26,14 @@ class FilterForProductViewSet(FilterSet):
 
 class ProductViewSet(ModelViewSet):
     """Product ViewSet"""
-
-    # permission_classes = [ProductPermission]
+                                                                                                                                                
+    permission_classes = [IsAuthenticated]
     queryset = Product.objects.filter(is_archived=False)
     serializer_class = ProductListSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = FilterForProductViewSet
     search_fields = ["name"]
-    ordering = ["-name"]
+    ordering = ["-created_at"]
     ordering_fields = ["id", "created_at"]
     http_method_names = ["options", "head", "get", "post", "patch"]
 
@@ -57,3 +59,4 @@ class ProductCategoryListAPIView(ListAPIView):
     ordering = ["name"]
     search_fields = ["name"]
     ordering_fields = ["name"]
+
