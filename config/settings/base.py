@@ -12,8 +12,10 @@ env = environ.Env()
 environ.Env.read_env(str(BASE_DIR / ".env"))
 
 
-CORS_ALLOW_ALL_ORIGINS = env.bool("CORS_ALLOW_ALL_ORIGINS")
-CORS_ALLOWED_ORGINS = env.list("CORS_ALLOWED_ORIGINS")
+# CORS_ALLOW_ALL_ORIGINS = env.bool("CORS_ALLOW_ALL_ORIGINS")
+CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOWED_ORGINS = env.list("CORS_ALLOWED_ORIGINS")
+# CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://another-origin.com"]
 
 
 # APPS
@@ -40,6 +42,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "src.user",
     "src.blog",
+    "src.product"
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

@@ -83,7 +83,7 @@ class PublicUserSignUpSerializer(serializers.ModelSerializer):
     """Public User SignUp Serializer"""
 
     first_name = serializers.CharField(max_length=50, required=True)
-    middle_name = serializers.CharField(max_length=50, allow_blank=True)
+    middle_name = serializers.CharField(max_length=50, allow_blank=True, default="cast")
     last_name = serializers.CharField(max_length=50, required=True)
     phone_no = serializers.CharField(max_length=10, required=True)
     email = serializers.EmailField(required=True)
@@ -127,13 +127,12 @@ class PublicUserSignUpSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        validated_data.pop("confirm_password")
         email = validated_data["email"]
         redirect_url = validated_data.pop("redirect_url", None)
 
         username = generate_unique_user_username(user_type="website_user")
 
-        user_instance = User.objects.create_website_user(
+        user_instance = User.objects.create_public_user(
             first_name=validated_data["first_name"].title(),
             middle_name=validated_data.get("middle_name", "").title(),
             last_name=validated_data["last_name"].title(),
