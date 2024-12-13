@@ -1,13 +1,15 @@
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView
 from django_filters.filterset import FilterSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 
 
-from src.product.models import Product, ProductCategory
+from src.product.models import Product, ProductCategory, ProductReview
 from .serializers import (
+    ProductReviewCreateSerializer,
     PublicProductListSerializer,
     ProductCategorySerializer,
     PublicProductRetrieveSerializer,
@@ -47,6 +49,20 @@ class PublicProductRetrieveAPIView(RetrieveAPIView):
             return Response(
                 {"error": "Product not found."}, status=status.HTTP_404_NOT_FOUND
             )
+    
+
+class ProductReviewCreateAPIView(CreateAPIView):
+    """
+    API to create a review for a product.
+    Ensures valid rating and saves the review.
+    """
+    queryset = ProductReview.objects.all()
+    serializer_class = ProductReviewCreateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        serializer.save(created_by=user)
 
 
 # class SearchProductInventory(APIView, LimitOffsetPagination):

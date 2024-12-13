@@ -27,7 +27,7 @@ class Product(AbstractInfoModel):
         ("pack", "Pack"),
     ]
 
-    business = models.ForeignKey(
+    farmer = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="products"
     )
     category = models.ForeignKey(

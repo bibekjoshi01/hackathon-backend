@@ -1,8 +1,13 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import BusinessInfo, BusinessCategory
-from .serializers import BusinessCategorySerializer, BusinessInfoSerializer
+from .serializers import (
+    BusinessCategorySerializer,
+    BusinessInfoRetrieveSerializer,
+    BusinessInfoSerializer,
+)
 from rest_framework.generics import ListAPIView
 from rest_framework import serializers
 from django_filters.rest_framework import DjangoFilterBackend
@@ -61,9 +66,24 @@ class BusinessInfoUpdateAPIView(generics.RetrieveUpdateAPIView):
 
 
 class BusinessCategoryListAPIView(ListAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = BusinessCategory.objects.filter(is_active=True)
     serializer_class = BusinessCategorySerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     ordering = ["name"]
     search_fields = ["name"]
     ordering_fields = ["name"]
+
+
+class BusinessInfoListAPIView(generics.RetrieveAPIView):
+    """
+    API to retrieve business info using farmer ID.
+    """
+
+    serializer_class = BusinessInfoRetrieveSerializer
+    permission_classes = [AllowAny]
+
+    def get(self, request, farmer_id, *args, **kwargs):
+        business_info = get_object_or_404(BusinessInfo, farmer_id=farmer_id)
+        serializer = self.get_serializer(business_info)
+        return Response(serializer.data)

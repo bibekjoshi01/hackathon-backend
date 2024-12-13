@@ -22,7 +22,7 @@ class BusinessInfo(AbstractInfoModel):
     description = models.TextField(blank=True)
     story = models.TextField(blank=True)
     contact_email = models.EmailField()
-    contact_phone = models.CharField(max_length=15)
+    contact_no = models.CharField(max_length=15)
 
     def __str__(self):
         return self.business_name

@@ -9,6 +9,7 @@ class BusinessCategorySerializer(serializers.ModelSerializer):
 
 
 class BusinessInfoSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = BusinessInfo
         fields = [
@@ -19,5 +20,22 @@ class BusinessInfoSerializer(serializers.ModelSerializer):
             "description",
             "story",
             "contact_email",
-            "contact_phone",
+            "contact_no",
+        ]
+
+
+class BusinessInfoRetrieveSerializer(serializers.ModelSerializer):
+    category = serializers.CharField(source="category.name")
+
+    class Meta:
+        model = BusinessInfo
+        fields = [
+            "category",
+            "latitude",
+            "longitude",
+            "business_name",
+            "description",
+            "story",
+            "contact_email",
+            "contact_no",
         ]
