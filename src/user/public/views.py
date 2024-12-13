@@ -122,7 +122,7 @@ class PublicUserVerifyAccountAPIView(APIView):
 class PublicUserLogoutAPIView(APIView):
     """User LogOut View"""
 
-    permission_classes = [WebsiteUserBasePermission]
+    permission_classes = [IsAuthenticated]
     serializer_class = PublicUserLogoutSerializer
 
     def post(self, request):
@@ -150,7 +150,7 @@ class PublicUserProfileView(generics.RetrieveAPIView):
 class PublicUserProfileUpdateView(generics.UpdateAPIView):
     """User Profile Update View"""
 
-    permission_classes = [WebsiteUserBasePermission]
+    permission_classes = [IsAuthenticated]
     serializer_class = PublicUserProfileUpdateSerializer
     http_method_names = ["patch"]
 

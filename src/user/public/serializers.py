@@ -326,6 +326,7 @@ class PublicUserProfileUpdateSerializer(serializers.ModelSerializer):
             "first_name",
             "middle_name",
             "last_name",
+            "bio",
             "phone_no",
             "photo",
         ]
@@ -342,6 +343,7 @@ class PublicUserProfileUpdateSerializer(serializers.ModelSerializer):
             validated_data.get("middle_name", user.middle_name).strip().title()
         )
         user.last_name = validated_data.get("last_name", user.last_name).strip().title()
+        user.bio = validated_data.get("bio", user.bio).strip()
 
         user.phone_no = validated_data.get("phone_no", user.phone_no)
         user.updated_at = timezone.now()

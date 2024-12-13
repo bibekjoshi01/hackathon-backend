@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import BusinessInfo, BusinessCategory
 from .serializers import (
     BusinessCategorySerializer,
+    BusinessDocumentsSerializer,
     BusinessInfoRetrieveSerializer,
     BusinessInfoSerializer,
 )
@@ -87,3 +88,29 @@ class BusinessInfoListAPIView(generics.RetrieveAPIView):
         business_info = get_object_or_404(BusinessInfo, farmer_id=farmer_id)
         serializer = self.get_serializer(business_info)
         return Response(serializer.data)
+
+
+class SubmitBusinessKYCAPIView(generics.CreateAPIView):
+    """
+    API to submit KYC form for business verification.
+    """
+
+    serializer_class = BusinessDocumentsSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        business_info = get_object_or_404(BusinessInfo, farmer=user)
+        if hasattr(business_info, "documents"):
+            return Response(
+                {"detail": "KYC already submitted."}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(business=business_info)
+            return Response(
+                {"detail": "KYC submitted successfully."},
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

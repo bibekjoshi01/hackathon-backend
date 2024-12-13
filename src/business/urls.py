@@ -4,6 +4,7 @@ from .views import (
     BusinessInfoCreateAPIView,
     BusinessInfoListAPIView,
     BusinessInfoUpdateAPIView,
+    SubmitBusinessKYCAPIView,
 )
 
 urlpatterns = [
@@ -21,6 +22,11 @@ urlpatterns = [
         "business-info/<int:farmer_id>",
         BusinessInfoListAPIView.as_view(),
         name="business-info-detail",
+    ),
+    path(
+        "business-info/verify",
+        SubmitBusinessKYCAPIView.as_view(),
+        name="submit-business-kyc",
     ),
     path("categories", BusinessCategoryListAPIView.as_view()),
 ]
