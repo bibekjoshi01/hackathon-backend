@@ -22,7 +22,7 @@ from src.user.exceptions import (
     UserRoleNotFound,
 )
 from .validators import CustomUsernameValidator, validate_image
-from ..core.constants import ThirdPartyApps
+from .oauth.constants import AuthProviders
 
 
 class PermissionCategory(AbstractInfoModel):
@@ -169,7 +169,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_("email address"), unique=True, blank=True)
     phone_no = models.CharField(_("phone number"), max_length=15, blank=True)
     photo = models.ImageField(
-        validators=[validate_image], blank=True, null=True, default="",
+        validators=[validate_image],
+        blank=True,
+        null=True,
+        default="",
     )
     is_superuser = models.BooleanField(
         _("superuser status"),
@@ -206,7 +209,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         max_length=30,
         blank=True,
         default="BY-CREDENTIALS",
-        choices=ThirdPartyApps.choices(),
+        choices=AuthProviders.choices(),
     )
     groups = models.ManyToManyField(
         UserRole,
@@ -233,7 +236,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     updated_at = models.DateTimeField(_("date updated"), auto_now=True)
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True,
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        null=True,
     )
     objects = UserManager()
 
