@@ -4,12 +4,14 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import ListAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+
 from src.product.recommendation.algorithm import get_product_recommendations
+from src.product.recommendation.function import calculate_demand_scores
 from .utils import generate_product_description
 
 
@@ -114,17 +116,25 @@ class ProductDescriptionAPIView(APIView):
 
 class ProductRecommendationAPIView(APIView):
 
-    def get(self, request, user_id, format=None):
-        # Get product recommendations for the given user_id
-        try:
-            recommended_product_ids = get_product_recommendations(user_id)
+    permission_classes = [AllowAny]
 
-            recommended_products = Product.objects.filter(
-                id__in=recommended_product_ids
-            )
+    def get(self, request, *args, **kwargs):
+        demand_scores = calculate_demand_scores()
 
-            serializer = ProductListSerializer(recommended_products, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        # Fetch product details
+        product_ids = [item["product_id"] for item in demand_scores]
+        products = Product.objects.filter(id__in=product_ids)
+        product_data = [
+            {
+                "id": product.id,
+                "name": product.name,
+                "demand_score": next(
+                    item["demand_score"]
+                    for item in demand_scores
+                    if item["product_id"] == product.id
+                ),
+            }
+            for product in products
+        ]
 
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"top_demanding_products": product_data})
