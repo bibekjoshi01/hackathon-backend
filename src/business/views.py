@@ -6,6 +6,7 @@ from .models import BusinessInfo, BusinessCategory
 from .serializers import (
     BusinessCategorySerializer,
     BusinessDocumentsSerializer,
+    BusinessInfoCreateSerializer,
     BusinessInfoRetrieveSerializer,
     BusinessInfoSerializer,
 )
@@ -22,22 +23,19 @@ class BusinessInfoCreateAPIView(generics.CreateAPIView):
     """
 
     queryset = BusinessInfo.objects.all()
-    serializer_class = BusinessInfoSerializer
+    serializer_class = BusinessInfoCreateSerializer
     permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
-        user = self.request.user
-        if BusinessInfo.objects.filter(farmer=user).exists():
-            raise serializers.ValidationError(
-                "Business info already exists for this farmer."
-            )
-        serializer.save(farmer=user, created_by=user)
-
     def create(self, request, *args, **kwargs):
-        try:
-            return super().create(request, *args, **kwargs)
-        except serializers.ValidationError as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        self.perform_create(serializer)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def perform_create(self, serializer):
+        serializer.save()
 
 
 class BusinessInfoUpdateAPIView(generics.UpdateAPIView):
@@ -76,12 +74,11 @@ class BusinessInfoRetrieveAPIView(generics.RetrieveAPIView):
     def get_object(self):
         user = self.request.user
         try:
-            object = BusinessInfo.objects.get(farmer=user)
+            business_info = BusinessInfo.objects.get(farmer=user)
         except BusinessInfo.DoesNotExist:
-            raise serializers.ValidationError("Business info do not exists.")
-        
-        serializer = self.get_serializer(object)
-        return Response(serializer.data)
+            raise serializers.ValidationError("Business info does not exist.")
+
+        return business_info
 
 
 class BusinessCategoryListAPIView(ListAPIView):
@@ -121,14 +118,14 @@ class SubmitBusinessKYCAPIView(generics.CreateAPIView):
         business_info = get_object_or_404(BusinessInfo, farmer=user)
         if hasattr(business_info, "documents"):
             return Response(
-                {"detail": "KYC already submitted."}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "KYC already submitted."}, status=status.HTTP_400_BAD_REQUEST
             )
 
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(business=business_info)
+            serializer.save(business=business_info, created_by=user)
             return Response(
-                {"detail": "KYC submitted successfully."},
+                {"message": "KYC submitted successfully."},
                 status=status.HTTP_201_CREATED,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

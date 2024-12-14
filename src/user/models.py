@@ -134,16 +134,6 @@ class UserManager(BaseUserManager):
 
     def create_public_user(self, username, email=None, password=None, **extra_fields):
         user = self._create_user(username, email, password, **extra_fields)
-        try:
-            if extra_fields.pop("is_customer", None):
-                user_group = UserRole.objects.get(codename="CUSTOMER")
-            elif extra_fields.pop("is_business"):
-                user_group = UserRole.objects.get(codename="BUSINESS")
-
-            user.groups.add(user_group)
-        except UserRole.DoesNotExist as err:
-            user_group = "Public User"
-            raise UserRoleNotFound(user_group) from err
         user.save()
         return user
 

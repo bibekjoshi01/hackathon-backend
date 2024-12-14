@@ -65,7 +65,7 @@ class PublicUserSignInAPIView(APIView):
     """User Login API View"""
 
     permission_classes = [AllowAny]
-    throttle_classes = [LoginThrottle]
+    # throttle_classes = [LoginThrottle]
     serializer_class = PublicUserLoginSerializer
 
     def handle_verification(self, data, request):

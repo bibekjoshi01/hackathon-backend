@@ -46,7 +46,7 @@
   },
   {
     "model": "user.UserRole",
-    "pk": 3,
+    "pk": 4,
     "fields": {
       "name": "Farmer",
       "codename": "FARMER",

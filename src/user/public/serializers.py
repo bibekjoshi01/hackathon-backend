@@ -96,6 +96,8 @@ class PublicUserSignUpSerializer(serializers.ModelSerializer):
     )
     has_accepted_terms = serializers.BooleanField(default=False)
     redirect_url = serializers.CharField(required=True, help_text="verify-account")
+    is_customer = serializers.BooleanField()
+    is_farmer = serializers.BooleanField()
 
     class Meta:
         model = User
@@ -108,6 +110,8 @@ class PublicUserSignUpSerializer(serializers.ModelSerializer):
             "password",
             "has_accepted_terms",
             "redirect_url",
+            "is_customer",
+            "is_farmer"
         ]
 
     def validate(self, attrs):
@@ -141,6 +145,17 @@ class PublicUserSignUpSerializer(serializers.ModelSerializer):
             email=email,
             username=username,
         )
+
+        try:
+            if validated_data.pop("is_customer", False):
+                user_group = UserRole.objects.get(codename="CUSTOMER")
+            elif validated_data.pop("is_farmer", False):
+                user_group = UserRole.objects.get(codename="FARMER")
+
+            user_instance.groups.add(user_group)
+        except UserRole.DoesNotExist as err:
+            user_group = "Public User"
+            raise ValueError("error") from err
 
         user_instance.save()
 
@@ -177,14 +192,16 @@ class PublicUserLoginSerializer(serializers.ModelSerializer):
         redirect_url = attrs.pop("redirect_url", None)
 
         user = self.get_user(persona)
-        # self.check_password(user, password)
-        # self.check_user_status(user)
+        self.check_password(user, password)
+        self.check_user_status(user)
         # self.check_website_user(user)
 
         context = {"request": self.context.get("request")}
 
         permissions = []
-        # user_roles = user.user_roles.filter(is_archived=False, is_active=True)
+        group_names = user.groups.filter(is_archived=False, is_active=True).values_list(
+            "name", flat=True
+        )
 
         # user_roles = GetRoleAndPermissionForLoginSerializer(
         #     user_roles,
@@ -211,12 +228,11 @@ class PublicUserLoginSerializer(serializers.ModelSerializer):
             "middle_name": user.middle_name,
             "last_name": user.last_name,
             "phone_no": user.phone_no,
-            "is_superuser": user.is_superuser,
             "is_email_verified": user.is_email_verified,
             "is_phone_verified": user.is_phone_verified,
             "email": user.email,
             "tokens": user.tokens,
-            # "roles": user_roles.data,
+            "roles": group_names,
         }
 
     def get_user(self, persona):
