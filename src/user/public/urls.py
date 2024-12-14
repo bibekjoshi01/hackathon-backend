@@ -8,6 +8,7 @@ from .views import (
     PublicUserSocialAuthAPIView,
     PublicUserLogoutAPIView,
     PublicUserProfileView,
+    PublicUserVerifyAccountAPIView,
 )
 
 router = DefaultRouter(trailing_slash=False)
@@ -32,6 +33,11 @@ urlpatterns = [
         "users/profile/update",
         PublicUserProfileUpdateView.as_view(),
         name="public_user_profile_update",
+    ),
+    path(
+        "users/verify",
+        PublicUserVerifyAccountAPIView.as_view(),
+        name="public_user_verify",
     ),
     path("users/logout", PublicUserLogoutAPIView.as_view(), name="public_user_logout"),
     path("users/profile", PublicUserProfileView.as_view(), name="public_user_profile"),

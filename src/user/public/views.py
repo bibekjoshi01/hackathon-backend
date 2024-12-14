@@ -30,6 +30,7 @@ from src.user.public.serializers import (
 )
 from src.user.models import User, UserAccountVerification
 from src.user.throttling import LoginThrottle
+from src.user.utils.verification import send_user_account_verification_email
 
 
 class PublicUserSocialAuthAPIView(generics.CreateAPIView):
@@ -78,12 +79,12 @@ class PublicUserSignInAPIView(APIView):
         )
         verification_request.update(is_archived=True)
 
-        # send_user_account_verification_email(
-        #     recipient_email=email,
-        #     user_id=user_id,
-        #     request=request,
-        #     redirect_url=redirect_url.strip("/"),
-        # )
+        send_user_account_verification_email(
+            recipient_email=email,
+            user_id=user_id,
+            request=request,
+            redirect_url=redirect_url.strip("/"),
+        )
 
     def post(self, request):
         serializer = self.serializer_class(
