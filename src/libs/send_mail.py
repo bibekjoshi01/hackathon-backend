@@ -23,7 +23,7 @@ def get_basic_urls(request):
     current_site = get_current_site(request)
     origin_url = request.headers.get("origin")
     domain = current_site.domain
-    base_static_url = f'https://{domain}{static("images/")}'
+    base_static_url = f'http://{domain}{static("images/")}'
 
     # Constructing URLs
     logo = f"{base_static_url}logo.jpeg"
@@ -43,12 +43,9 @@ def get_basic_urls(request):
 
 
 def _send_email(subject, body, template_name, context, recipient_email):
-    basic_urls = get_basic_urls(context["request"])
-    # Append basic URLs to the context
-    context.update(basic_urls)
 
     email_template = render_to_string(
-        f"{template_name}.html",
+        f"user/account_verification.html",
         context={
             "context": context,
         },

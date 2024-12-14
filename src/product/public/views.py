@@ -29,7 +29,7 @@ class PublicProductListAPIView(ListAPIView):
     queryset = Product.objects.filter(is_active=True)
     serializer_class = PublicProductListSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ["price", "category"]
+    filterset_fields = ["price", "category", "farmer"]
     search_fields = ["name", "description"]
     ordering = ["-name", "price"]
     ordering_fields = ["id", "price"]

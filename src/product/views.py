@@ -7,6 +7,9 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
+
+from src.product.recommendation.algorithm import get_product_recommendations
 from .utils import generate_product_description
 
 
@@ -107,3 +110,21 @@ class ProductDescriptionAPIView(APIView):
             return Response({"description": description}, status=200)
         except ValueError as e:
             return Response({"error": str(e)}, status=500)
+
+
+class ProductRecommendationAPIView(APIView):
+
+    def get(self, request, user_id, format=None):
+        # Get product recommendations for the given user_id
+        try:
+            recommended_product_ids = get_product_recommendations(user_id)
+
+            recommended_products = Product.objects.filter(
+                id__in=recommended_product_ids
+            )
+
+            serializer = ProductListSerializer(recommended_products, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

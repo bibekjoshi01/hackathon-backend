@@ -15,6 +15,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from src.user.oauth import AuthTokenValidator, AuthProviders
 from src.user.models import User, UserAccountVerification, UserRole
 from src.user.utils.generate_username import generate_unique_user_username
+from src.user.utils.verification import send_user_account_verification_email
 from .messages import (
     ACCOUNT_DISABLED,
     ALREADY_VERIFIED,
@@ -92,7 +93,7 @@ class PublicUserSignUpSerializer(serializers.ModelSerializer):
         write_only=True,
         min_length=8,
         required=True,
-        validators=[validate_password],
+        # validators=[validate_password],
     )
     has_accepted_terms = serializers.BooleanField(default=False)
     redirect_url = serializers.CharField(required=True, help_text="verify-account")
@@ -159,12 +160,12 @@ class PublicUserSignUpSerializer(serializers.ModelSerializer):
 
         user_instance.save()
 
-        # send_user_account_verification_email(
-        #     recipient_email=email,
-        #     user_id=user_instance.id,
-        #     request=self.context["request"],
-        #     redirect_url=redirect_url.strip("/"),
-        # )
+        send_user_account_verification_email(
+            recipient_email=email,
+            user_id=user_instance.id,
+            request=self.context["request"],
+            redirect_url=redirect_url.strip("/"),
+        )
 
         return user_instance
 

@@ -84,7 +84,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         category = validated_data.pop('category')
         featured_image = validated_data.pop('featured_image', None)
         user = get_user_by_context(self.context)
-        validated_data["business"] = user
+        validated_data["farmer"] = user
         validated_data["created_by"] = user
     
         product = Product.objects.create(category=category, **validated_data)

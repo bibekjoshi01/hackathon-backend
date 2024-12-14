@@ -1,10 +1,11 @@
 import openai
 from django.conf import settings
 
-openai.api_key = settings.OPENAI_API_KEY
 
 
 def generate_product_description(product_name, category, additional_info=None):
+    openai.api_key = settings.OPENAI_API_KEY
+    
     """
     Generate a product description using OpenAI API with the latest SDK version.
     """
@@ -29,7 +30,7 @@ def generate_product_description(product_name, category, additional_info=None):
         response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=messages,
-            max_tokens=250,
+            max_tokens=500,
             temperature=0.7,
         )
         description = response.choices[0].message.content.strip()

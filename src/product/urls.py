@@ -2,7 +2,12 @@ from django.urls import path
 
 from rest_framework.routers import DefaultRouter
 
-from .views import ProductDescriptionAPIView, ProductViewSet, ProductCategoryListAPIView
+from .views import (
+    ProductDescriptionAPIView,
+    ProductRecommendationAPIView,
+    ProductViewSet,
+    ProductCategoryListAPIView,
+)
 
 router = DefaultRouter(trailing_slash=False)
 
@@ -15,5 +20,10 @@ urlpatterns = [
         "generate-description",
         ProductDescriptionAPIView.as_view(),
         name="generate-description",
+    ),
+    path(
+        "recommendations/<int:user_id>/",
+        ProductRecommendationAPIView.as_view(),
+        name="product-recommendations",
     ),
 ]

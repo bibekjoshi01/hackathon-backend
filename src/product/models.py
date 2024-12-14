@@ -78,3 +78,22 @@ class ProductImage(AbstractInfoModel):
 
     def __str__(self):
         return f"Image for {self.product.name}"
+
+
+# Recommendation Data
+
+class ProductSearch(models.Model):
+    query = models.CharField(max_length=255)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Search {self.query}"
+
+
+class ProductClick(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="clicks")
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"clicked on {self.product.name}"
+
